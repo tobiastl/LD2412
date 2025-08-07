@@ -1,7 +1,7 @@
 /**
  * @file LD2412.h
  * @author Trent Tobias
- * @version 1.0
+ * @version 1.0.0
  * @date August 07, 2025
  * @brief LD2412 serial communication implementation
  */
@@ -231,5 +231,6 @@ public:
      */
     int staticEnergy();
 };
+
 
 #endif //LD2412_H
