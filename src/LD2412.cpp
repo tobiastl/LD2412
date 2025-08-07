@@ -1,7 +1,7 @@
 /**
  * @file LD2412.cpp
  * @author Trent Tobias
- * @version 1.0
+ * @version 1.0.0
  * @date August 07, 2025
  * @brief LD2412 serial communication implementation
  */
