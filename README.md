@@ -1,2 +1,2 @@
 # LD2412
-This library implements the serial communication as specified by the HLK-LD2412 serial communication protocol sheet.
+Arduino library which implements the serial commands for the HLK-LD2412 sensor as specified by the HLK-LD2412 serial communication protocol sheet.
