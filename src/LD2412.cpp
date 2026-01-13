@@ -1,8 +1,8 @@
 /**
  * @file LD2412.cpp
  * @author Trent Tobias
- * @version 1.0.1
- * @date August 12, 2025
+ * @version 1.0.2
+ * @date January 12, 2026
  * @brief LD2412 serial communication implementation
  */
 
@@ -12,8 +12,8 @@ LD2412::LD2412(Stream& ld_serial) : serial(ld_serial) {
 }
 
 /*-----MISC Functions-----*/
-void LD2412::sendCommand(uint8_t* data) {
-    this->data_len[0] = sizeof(data);
+void LD2412::sendCommand(uint8_t* data, uint8_t len) {
+    this->data_len[0] = len;
 
     this->serial.write(FRAME_HEADER, 4);
     this->serial.write(this->data_len, 2);
@@ -60,7 +60,7 @@ uint8_t* LD2412::getAck(uint8_t respData, uint8_t len) {
 
 bool LD2412::enableConfig() {
     uint8_t data[] = {0xFF, 0x00, 0x01, 0x00};
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 18); ack != nullptr && ack[8] == 0x00)
         return true;
@@ -69,7 +69,7 @@ bool LD2412::enableConfig() {
 
 bool LD2412::disableConfig() {
     uint8_t data[] = {0xFE, 0x00};
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 14); ack != nullptr && ack[8] == 0x00)
         return true;
@@ -118,7 +118,7 @@ bool LD2412::enterCalibrationMode() {
     if (!enableConfig())
         if (!enableConfig())
             return false;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 14); ack != nullptr && ack[8] == 0x00)
         success = true;
@@ -132,7 +132,7 @@ int LD2412::checkCalibrationMode() {
     if (!enableConfig())
         if (!enableConfig())
             return -1;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 16); ack != nullptr && ack[8] == 0x00) {
         uint8_t temp = ack[10];
@@ -149,7 +149,7 @@ int* LD2412::readFirmwareVersion() {
     if (!enableConfig())
         if (!enableConfig())
             return nullptr;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 22); ack != nullptr && ack[8] == 0x00) {
         this->firmwareResponse[0] = ack[10] + (ack[11] << 8);
@@ -169,7 +169,7 @@ bool LD2412::resetDeviceSettings() {
     if (!enableConfig())
         if (!enableConfig())
             return false;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 14); ack != nullptr && ack[8] == 0x00)
         success = true;
@@ -184,7 +184,7 @@ bool LD2412::restartModule() {
     if (!enableConfig())
         if (!enableConfig())
             return false;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 14); ack != nullptr && ack[8] == 0x00)
         success = true;
@@ -200,7 +200,7 @@ bool LD2412::setParamConfig(uint8_t min, uint8_t max, uint8_t duration, uint8_t 
     if (!enableConfig())
         if (!enableConfig())
             return false;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 14); ack != nullptr && ack[8] == 0x00)
         success = true;
@@ -217,7 +217,7 @@ bool LD2412::setMotionSensitivity(uint8_t sen) {
     if (!enableConfig())
         if (!enableConfig())
             return false;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 14); ack != nullptr && ack[8] == 0x00)
         success = true;
@@ -233,7 +233,7 @@ bool LD2412::setMotionSensitivity(uint8_t sen[14]) {
     if (!enableConfig())
         if (!enableConfig())
             return false;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 14); ack != nullptr && ack[8] == 0x00)
         success = true;
@@ -250,7 +250,7 @@ bool LD2412::setStaticSensitivity(uint8_t sen) {
     if (!enableConfig())
         if (!enableConfig())
             return false;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 14); ack != nullptr && ack[8] == 0x00)
         success = true;
@@ -266,7 +266,7 @@ bool LD2412::setStaticSensitivity(uint8_t sen[14]) {
     if (!enableConfig())
         if (!enableConfig())
             return false;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 14); ack != nullptr && ack[8] == 0x00)
         success = true;
@@ -309,7 +309,7 @@ bool LD2412::setBaudRate(int baud) {
     if (!enableConfig())
         if (!enableConfig())
             return false;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 14); ack != nullptr && ack[8] == 0x00)
         success = true;
@@ -328,7 +328,7 @@ int* LD2412::getParamConfig() {
     if (!enableConfig())
         if (!enableConfig())
             return nullptr;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 19); ack != nullptr && ack[8] == 0x00) {
         for (int i=10; i<15; i++)
@@ -346,7 +346,7 @@ int LD2412::getMotionSensitivity() {
     if (!enableConfig())
         if (!enableConfig())
             return false;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 28); ack != nullptr && ack[8] == 0x00) {
         int min = 100;
@@ -365,7 +365,7 @@ int* LD2412::getMotionSensitivity(std::true_type) {
     if (!enableConfig())
         if (!enableConfig())
             return nullptr;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 28); ack != nullptr && ack[8] == 0x00) {
         for (int i=10; i<24; i++)
@@ -383,7 +383,7 @@ int LD2412::getStaticSensitivity() {
     if (!enableConfig())
         if (!enableConfig())
             return false;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 28); ack != nullptr && ack[8] == 0x00) {
         int min = 100;
@@ -402,7 +402,7 @@ int* LD2412::getStaticSensitivity(std::true_type) {
     if (!enableConfig())
         if (!enableConfig())
             return nullptr;
-    sendCommand(data);
+    sendCommand(data, std::size(data));
 
     if (const uint8_t* ack = getAck(data[0], 28); ack != nullptr && ack[8] == 0x00) {
         for (int i=10; i<24; i++)
