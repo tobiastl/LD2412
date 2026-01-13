@@ -1,8 +1,8 @@
 /**
  * @file LD2412.h
  * @author Trent Tobias
- * @version 1.0.1
- * @date August 12, 2025
+ * @version 1.0.2
+ * @date January 12, 2026
  * @brief LD2412 serial communication implementation
  */
 
@@ -56,8 +56,9 @@ private:
     /**
      * @brief Sends a command to the radar
      * @param data The data (command word and command value)
+     * @param len Total length of data
      */
-    void sendCommand(uint8_t* data);
+    void sendCommand(uint8_t* data, uint8_t len);
 
     /**
      * @brief Gets the ACK after a command is sent
